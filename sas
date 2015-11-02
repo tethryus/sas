@@ -23,9 +23,6 @@ fi
 os="";
 installer="";
 OUTPUT=/etc/openvpn/server.conf;
-# ip="ifconfig eth0 | grep -oE '\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b' | head -n1";
-# nm="ifconfig eth0 | sed -rn '2s/ .*:(.*)$/\1/p'";
-# gw="ip route show default | awk '/default/ {print $3}'";
 
 grep "centos" /etc/os-release -i -q
 if [ $? = '0' ];
@@ -127,7 +124,7 @@ show_menu(){
 
         3) clear;
             option_picked "Networking"; 
-        sudo ifconfig eth0 down && sudo ifconfig eth0 up; #Network restart;
+         ifconfig eth0 down &&  ifconfig eth0 up; #Network restart;
             show_menu;
             ;;
 
@@ -192,25 +189,25 @@ show_openvpn(){
         case $subopt in
         1) clear;
         option_picked "OpenVPN install";
-        sudo $installer install openvpn dnsmasq bridge-utils easy-rsa; #OpenVPN install;
+         $installer install openvpn dnsmasq bridge-utils easy-rsa; #OpenVPN install;
 	    show_openvpn;
         ;;
 
         2) clear;
             option_picked "Setup CA"; 
-        sudo vi /etc/openvpn/easy-rsa/vars; #Setup CA;
+         vi /etc/openvpn/easy-rsa/vars; #Setup CA;
             show_openvpn;
             ;;
 
         3) clear;
             option_picked "Copy required files"; 
-            sudo mkdir /etc/openvpn/easy-rsa/; #Copy required files;
+             mkdir /etc/openvpn/easy-rsa/; #Copy required files;
             sleep 2
-	    sudo cp -R /usr/share/easy-rsa/* /etc/openvpn/easy-rsa/;
+	     cp -R /usr/share/easy-rsa/* /etc/openvpn/easy-rsa/;
             sleep 2
             cd /etc/openvpn/easy-rsa/; ## move to the easy-rsa directory
             sleep 2
-            sudo chmod g+w . ## make this directory writable by the system administrators
+             chmod g+w . ## make this directory writable by the system administrators
             sleep 2
             source ./vars ## execute your new vars file
             sleep 2
@@ -226,72 +223,72 @@ show_openvpn(){
             sleep 2
             openvpn --genkey --secret ta.key;  ## Build a TLS key
             sleep 2
-            sudo cp server.crt server.key ca.crt dh2048.pem ta.key ../../; 		
+             cp server.crt server.key ca.crt dh2048.pem ta.key ../../; 		
 	    show_openvpn;
             ;;
 
         4) clear;
             option_picked "Setting up the server - bridged"; 
             cd /etc/openvpn/;
-            sudo echo "#!/bin/sh" > up.sh;
-            sudo echo " " >> up.sh;
-            sudo echo 'BR=$1' >> up.sh;
-            sudo echo 'DEV=$2' >> up.sh;
-            sudo echo 'MTU=$3' >> up.sh;
-            sudo echo '/sbin/ip link set "$DEV" up promisc on mtu "$MTU"' >> up.sh;
-            sudo echo '/sbin/brctl addif $BR $DEV' >> up.sh;
-	    sudo echo "#!/bin/sh" > down.sh;
-            sudo echo " " >> down.sh;
-            sudo echo 'BR=$1' >> down.sh;
-            sudo echo 'DEV=$2' >> down.sh;
-            sudo echo " " >> down.sh;
-            sudo echo '/sbin/brctl delif $BR $DEV' >> down.sh;
-            sudo echo '/sbin/ip link set "$DEV" down' >> down.sh;
-            sudo chmod +x /etc/openvpn/up.sh /etc/openvpn/down.sh;
-            sudo echo 'mode server' >> $OUTPUT;
-            sudo echo 'tls-server'>> $OUTPUT;
-            sudo echo 'dev tap0' >> $OUTPUT;
-            sudo echo 'up "/etc/openvpn/up.sh br0 tap0 1500"' >> $OUTPUT;
-            sudo echo 'down "/etc/openvpn/down.sh br0 tap0"' >> $OUTPUT;
-            sudo echo 'persist-key' >> $OUTPUT;
-            sudo echo 'persist-tun' >> $OUTPUT;
-            sudo echo 'ca ca.crt' >> $OUTPUT;
-            sudo echo 'cert server.crt' >> $OUTPUT;
-            sudo echo 'key server.key' >> $OUTPUT;
-            sudo echo 'dh dh1024.pem' >> $OUTPUT;
-            sudo echo 'tls-auth ta.key 0' >> $OUTPUT;
-            sudo echo 'cipher BF-CBC' >> $OUTPUT;
-            sudo echo 'comp-lzo' >> $OUTPUT;
-            sudo echo 'max-clients 10' >> $OUTPUT;
-            sudo echo 'ifconfig-pool-persist ipp.txt' >> $OUTPUT;
-            sudo echo 'user nobody' >> $OUTPUT;
-            sudo echo 'group nogroup' >> $OUTPUT;
-            sudo echo 'keepalive 10 120' >> $OUTPUT;
-            sudo echo 'status openvpn-status.log' >> $OUTPUT;
-            sudo echo 'verb 3'
-            sudo echo "Type in the IP address of your server (default: 192.168.1.1):";
+             echo "#!/bin/sh" > up.sh;
+             echo " " >> up.sh;
+             echo 'BR=$1' >> up.sh;
+             echo 'DEV=$2' >> up.sh;
+             echo 'MTU=$3' >> up.sh;
+             echo '/sbin/ip link set "$DEV" up promisc on mtu "$MTU"' >> up.sh;
+             echo '/sbin/brctl addif $BR $DEV' >> up.sh;
+	     echo "#!/bin/sh" > down.sh;
+             echo " " >> down.sh;
+             echo 'BR=$1' >> down.sh;
+             echo 'DEV=$2' >> down.sh;
+             echo " " >> down.sh;
+             echo '/sbin/brctl delif $BR $DEV' >> down.sh;
+             echo '/sbin/ip link set "$DEV" down' >> down.sh;
+             chmod +x /etc/openvpn/up.sh /etc/openvpn/down.sh;
+             echo 'mode server' >> $OUTPUT;
+             echo 'tls-server'>> $OUTPUT;
+             echo 'dev tap0' >> $OUTPUT;
+             echo 'up "/etc/openvpn/up.sh br0 tap0 1500"' >> $OUTPUT;
+             echo 'down "/etc/openvpn/down.sh br0 tap0"' >> $OUTPUT;
+             echo 'persist-key' >> $OUTPUT;
+             echo 'persist-tun' >> $OUTPUT;
+             echo 'ca ca.crt' >> $OUTPUT;
+             echo 'cert server.crt' >> $OUTPUT;
+             echo 'key server.key' >> $OUTPUT;
+             echo 'dh dh1024.pem' >> $OUTPUT;
+             echo 'tls-auth ta.key 0' >> $OUTPUT;
+             echo 'cipher BF-CBC' >> $OUTPUT;
+             echo 'comp-lzo' >> $OUTPUT;
+             echo 'max-clients 10' >> $OUTPUT;
+             echo 'ifconfig-pool-persist ipp.txt' >> $OUTPUT;
+             echo 'user nobody' >> $OUTPUT;
+             echo 'group nogroup' >> $OUTPUT;
+             echo 'keepalive 10 120' >> $OUTPUT;
+             echo 'status openvpn-status.log' >> $OUTPUT;
+             echo 'verb 3'
+             echo "Type in the IP address of your server (default: 192.168.1.1):";
                      ip=""
                      read ip && echo local "$ip" >> $OUTPUT;
-	    sudo echo "Choose openvpn port (default: 1194):";
+	     echo "Choose openvpn port (default: 1194):";
                      port=""
                      read port && echo port "$port" >> $OUTPUT;
-	    sudo echo "Select transfer protocol, tcp/udp (default: tcp)";
+	     echo "Select transfer protocol, tcp/udp (default: tcp)";
                      proto=""
                      read proto && echo proto "$proto" >> $OUTPUT;
-	    sudo echo "Type in the server bridge address and client pool list"
-	    sudo echo "Default: 192.168.1.10 255.255.255.0 192.168.1.100 192.168.1.110"
+	     echo "Type in the server bridge address and client pool list"
+	     echo "Default: 192.168.1.10 255.255.255.0 192.168.1.100 192.168.1.110"
 		     bridge=""
 		     read bridge && echo server-bridge "$bridge" >> $OUTPUT;
-	    sudo echo "Setup push primary DNS settings to clients"
-	    sudo echo "Type in the primary DNS address"
+	     echo "Setup push primary DNS settings to clients"
+	     echo "Type in the primary DNS address"
 		     dns=""
 		     read dns && echo push "dhcp-option DNS "$dns"" >> $OUTPUT;
-	    sudo echo "Setup push secondary DNS settings to clients"
-	    sudo echo "Type in the secondary DNS address"
+	     echo "Setup push secondary DNS settings to clients"
+	     echo "Type in the secondary DNS address"
 		     dns=""
 		     read dns && echo push "dhcp-option DNS "$dns"" >> $OUTPUT;
-	    sudo echo "Setup push DOMAIN settings to clients"
-	    sudo echo "Type in the DOMAIN name"
+	     echo "Setup push DOMAIN settings to clients"
+	     echo "Type in the DOMAIN name"
 		     domain=""
 		     read domain && echo push "dhcp-option DOMAIN "$domain"" >> $OUTPUT;
             show_openvpn;
