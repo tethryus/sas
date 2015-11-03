@@ -124,18 +124,17 @@ show_menu(){
 
         3) clear;
             option_picked "Networking"; 
-         ifconfig eth0 down &&  ifconfig eth0 up; #Network restart;
-            show_menu;
+            show_networking;
             ;;
 
         4) clear;
-            option_picked "Option 4 Picked"; #Something
-        ssh something;
+            option_picked "Services"; #Something
+            show_services;
             show_menu;
             ;;
 
 	5) clear;
-            option_picked "Option 5 Picked"; #Something
+            option_picked "Tools"; #Something
         exit;
             ;;
 
