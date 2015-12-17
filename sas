@@ -74,9 +74,9 @@ show_menu(){
     echo -e "${MENU}*********************************************${NORMAL}"
     echo -e "${MENU}**${NUMBER} 1)${MENU} Packages ${NORMAL}"
     echo -e "${MENU}**${NUMBER} 2)${MENU} OpenVPN ${NORMAL}"
-    echo -e "${MENU}**${NUMBER} 3)${MENU} Network restart ${NORMAL}"
-    echo -e "${MENU}**${NUMBER} 4)${MENU} Something ${NORMAL}"
-    echo -e "${MENU}**${NUMBER} 5)${MENU} Something ${NORMAL}"
+    echo -e "${MENU}**${NUMBER} 3)${MENU} Network ${NORMAL}"
+    echo -e "${MENU}**${NUMBER} 4)${MENU} Users and groups ${NORMAL}"
+    echo -e "${MENU}**${NUMBER} 5)${MENU} Services ${NORMAL}"
     echo -e "${MENU}**${NUMBER} 6)${MENU} Exit ${NORMAL}"
     echo -e "${MENU}*********************************************${NORMAL}"
     echo -e "${ENTER_LINE}Please enter a menu option and enter. ${NORMAL}"
@@ -90,28 +90,32 @@ show_menu(){
         case $opt in
         1) clear;
         option_picked "Packages";
-        show_packages; #Software Updates;
+        show_packages; #Software Updates
 	     show_menu;
         ;;
 
         2) clear;
-            option_picked "OpenVPN"; 
-            show_openvpn;
+        option_picked "OpenVPN"; 
+        show_openvpn; #OpenVPN install and configuration
+	show_menu;
             ;;
 
         3) clear;
-            option_picked "Networking"; 
-            show_networking;
+        option_picked "Network"; 
+        show_networking; #Network setup and other configurations
+	show_menu;
             ;;
 
         4) clear;
-            option_picked "Services"; #Something
-            show_services;
-            show_menu;
+        option_picked "Users and groups";
+        show_users; #Users and groups add/delete/modify 
+	show_menu;
             ;;
 
 	5) clear;
-            option_picked "Tools"; #Something
+        option_picked "Services";
+	show_services; #Services installation and configuration
+	show_menu;
         exit;
             ;;
 
@@ -152,7 +156,7 @@ show_openvpn(){
     echo -e "${MENU}**${NUMBER} 2)${MENU} Setup CA ${NORMAL}"
     echo -e "${MENU}**${NUMBER} 3)${MENU} Copy required files ${NORMAL}"
     echo -e "${MENU}**${NUMBER} 4)${MENU} Setting up the server ${NORMAL}"
-    echo -e "${MENU}**${NUMBER} 5)${MENU} Something ${NORMAL}"
+    echo -e "${MENU}**${NUMBER} 5)${MENU} Check connectivity ${NORMAL}"
     echo -e "${MENU}**${NUMBER} 6)${MENU} Back ${NORMAL}"
     echo -e "${MENU}*********************************************${NORMAL}"
     echo -e "${ENTER_LINE}Please enter a menu option and enter. ${NORMAL}"
