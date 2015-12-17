@@ -1,34 +1,20 @@
-#####################################################################################################
-#####################################################################################################
-##########################*************Simple Automated Script*************##########################
-##########################   d888888o.           .8.            d888888o.  ##########################                                              
-########################## .`8888:' `88.        .888.         .`8888:' `88.########################## 
-########################## 8.`8888.   Y8       :88888.        8.`8888.   Y8########################## 
-########################## `8.`8888.          . `88888.       `8.`8888.    ########################## 
-##########################  `8.`8888.        .8. `88888.       `8.`8888.   ########################## 
-##########################   `8.`8888.      .8`8. `88888.       `8.`8888.  ########################## 
-##########################    `8.`8888.    .8' `8. `88888.       `8.`8888. ########################## 
-##########################8b   `8.`8888.  .8'   `8. `88888.  8b   `8.`8888.########################## 
-##########################`8b.  ;8.`8888 .888888888. `88888. `8b.  ;8.`8888########################## 
-########################## `Y8888P ,88P'.8'       `8. `88888. `Y8888P ,88P'##########################
-#####################################################################################################
-#####################################################################################################
-
- 
-#!/bin/bash
+#!/bin/bash 
+# Script to check if you are running the script as root
 if [ "$(id -u)" != "0" ]; then
 echo "This script must be run as root" 1>&2
 exit 1
 fi
-os="";
+# Check the OS type, in order to select the correct variables
+#OS="'uname -a'";
 installer="";
+search="";
+upgrade="";
 OUTPUT=/etc/openvpn/server.conf;
 
 grep "centos" /etc/os-release -i -q
 if [ $? = '0' ];
 then
 os='CentOS'
-echo "$os detected";
 installer='yum'
 search='yum'
 upgrade='upgrade'
@@ -38,7 +24,6 @@ grep "debian" /etc/os-release -i -q
 if [ $? = '0' ];
 then
 os='Debian'
-echo "$os detected";
 installer='apt-get'
 search='apt-cache'
 upgrade='upgrade'
@@ -48,7 +33,6 @@ grep "ubuntu" /etc/os-release -i -q
 if [ $? = '0' ];
 then
 os='Ubuntu'
-echo "$os detected";
 installer='apt-get'
 search='apt-cache'
 upgrade='upgrade'
@@ -58,32 +42,25 @@ grep "slackware" /etc/os-release -i -q
 if [ $? = '0' ];
 then
 os='Slackware'
-echo "$os detected";
 installer='slackpkg'
 upgrade='upgrade-all'
 search='slackpkg'
 fi
 
-grep "rogentos" /etc/os-release -i -q
-if [ $? = '0' ];
-then
-os='Rogentos'
-echo "$os detected";
-installer='equo'
-search='equo'
-upgrade='upgrade'
-search='query files'
+#Check internet connection and display in menu
+connection="";
+wget -q --spider http://google.com
+
+if [ $? -eq 0 ]; then
+    connection='ARE'
+else
+    connection='ARE NOT'
 fi
 
+#Show IP address 
+ip=$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p');
 
-
-
-if [ $os = "" ];
-then
-echo "not a valid system os"
-exit 1
-fi
-
+#Show menu and select submenu
 show_menu(){
     NORMAL=`echo "\033[m"`
     MENU=`echo "\033[36m"` #Blue
@@ -91,9 +68,9 @@ show_menu(){
     FGRED=`echo "\033[41m"`
     RED_TEXT=`echo "\033[31m"`
     ENTER_LINE=`echo "\033[33m"`
-    echo -e "${MENU}You are logged in as: ${NUMBER}`whoami`"
+    echo -e "${MENU}You are logged in as: ${NUMBER}`whoami` ${MENU}running ${NUMBER}$os"
     echo -e "${MENU}Date is: ${NUMBER}`date`"
-    echo -e "${MENU}Running ${NUMBER}'$os'"
+    echo -e "${MENU}You ${NUMBER}$connection CONNECTED TO THE INTERNET ${MENU}using ${NUMBER}$ip"
     echo -e "${MENU}*********************************************${NORMAL}"
     echo -e "${MENU}**${NUMBER} 1)${MENU} Packages ${NORMAL}"
     echo -e "${MENU}**${NUMBER} 2)${MENU} OpenVPN ${NORMAL}"
@@ -295,7 +272,6 @@ show_openvpn(){
 
         5) clear;
             option_picked "Setting up the server - tunnel"; #Coming soon
-        ssh something;
             show_openvpn;
             ;;
 
